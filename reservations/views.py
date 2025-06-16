@@ -8,7 +8,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import User
-
+from django.contrib.auth.models import User
+from rest_framework import viewsets, permissions
+from .serializers import UserSerializer
 from django.contrib.auth.models import User
 from rest_framework import viewsets
 from rest_framework.permissions import IsAdminUser
@@ -53,7 +55,10 @@ class CustomAuthToken(ObtainAuthToken):
             'is_staff': token.user.is_staff,
             'username': token.user.username
         })
-
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAdminUser]
 class RegisterUser(APIView):
     def post(self, request):
         username = request.data.get('username')
