@@ -22,12 +22,6 @@ class UserSerializer(ModelSerializer):
         model = User
         fields = ['id', 'username']
 
-# User viewset for admin use
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [IsAdminUser]
-
 class RoomViewSet(viewsets.ModelViewSet):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer

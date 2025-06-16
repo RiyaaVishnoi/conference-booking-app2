@@ -11,9 +11,13 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'email', 'is_staff', 'is_superuser']
 class BookingSerializer(serializers.ModelSerializer):
-    user = serializers.StringRelatedField()
-    room = serializers.SlugRelatedField(slug_field='name', queryset=Room.objects.all())
+    user = serializers.StringRelatedField(read_only=True)
+    room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())
+    room_name = serializers.SerializerMethodField()
 
     class Meta:
         model = Booking
-        fields = '__all__'
+        fields = ['id', 'user', 'room', 'room_name', 'date', 'time', 'purpose']
+
+    def get_room_name(self, obj):
+        return obj.room.name
