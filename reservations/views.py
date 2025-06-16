@@ -8,6 +8,24 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import User
+
+from django.contrib.auth.models import User
+from rest_framework import viewsets
+from rest_framework.permissions import IsAdminUser
+from rest_framework.serializers import ModelSerializer
+
+# User serializer
+class UserSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username']
+
+# User viewset for admin use
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAdminUser]
+
 class RoomViewSet(viewsets.ModelViewSet):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
@@ -19,8 +37,12 @@ class BookingViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-from django.shortcuts import render
+        # If user is admin and sent a user ID use that
+        if self.request.user.is_staff and 'user' in self.request.data:
+            serializer.save(user_id=self.request.data['user'])
+        else:
+            # Default to logged-in user
+            serializer.save(user=self.request.user)
 
 class CustomAuthToken(ObtainAuthToken):
     def post(self, request, *args, **kwargs):

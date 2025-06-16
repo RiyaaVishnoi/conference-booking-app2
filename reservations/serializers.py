@@ -7,9 +7,9 @@ class RoomSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class BookingSerializer(serializers.ModelSerializer):
-    room = serializers.StringRelatedField()  # shows the rooms __str__()
+    user = serializers.StringRelatedField()
+    room = serializers.SlugRelatedField(slug_field='name', queryset=Room.objects.all())
 
     class Meta:
         model = Booking
         fields = '__all__'
-        read_only_fields = ['user']
